@@ -3,13 +3,14 @@ using System.Linq;
 
 namespace BlazapyBird.Data
 {
-    public class Universe
+    public class Universe: GameElement
     {
-        public string CssStyle => $"width: {SCREENWIDTH}px; height: {SCREENHEIGHT}px; ";
+        public override string CssStyle => $"width: {SCREENWIDTH}px; height: {SCREENHEIGHT}px; ";
         public const int FPS = 30;
         public const int SCREENWIDTH  = 288;
-
         public const int SCREENHEIGHT = 512;
+        public override int Width => SCREENHEIGHT;
+        public override int Height => SCREENHEIGHT;
 
         public const int PIPEGAPSIZE  = 100; // gap between upper and lower part of pipe
         public static double BASEY => SCREENHEIGHT * 0.79;
