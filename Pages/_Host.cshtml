@@ -16,6 +16,13 @@
         @(await Html.RenderComponentAsync<App>(RenderMode.Server))
     </app>
 
+    <script>
+        window.SetFocusToElement = (element) => {
+            console.log("xxx");
+            element.focus();
+        };
+    </script>
+
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

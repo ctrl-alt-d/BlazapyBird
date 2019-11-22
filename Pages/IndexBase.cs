@@ -6,20 +6,28 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Components.Web;
 using System.Threading.Tasks;
+using Microsoft.JSInterop;
 
 namespace BlazapyBird.Pages
 {
 
     public class IndexBase: ComponentBase
     {
-        [Inject] protected Universe Universe {get; set; }        
+        [Inject] protected Universe Universe {get; set; }      
+        [Inject] protected IJSRuntime JSRuntime {get; set; }       
 
         protected Queue<KeyboardEventArgs> KeyPressed = new Queue<KeyboardEventArgs>();
+        protected void KeyDown(KeyboardEventArgs e)
+        {
+            KeyPressed.Enqueue(e);
+        }
+        protected ElementReference OuterDiv;
 
-        protected override void OnAfterRender(bool firstRender)
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
+                await JSRuntime.InvokeVoidAsync("SetFocusToElement", OuterDiv);
                 MainGame( Render );
             }
         }
@@ -102,7 +110,7 @@ namespace BlazapyBird.Pages
                 while (KeyPressed.Any())
                 {
                     var k = KeyPressed.Dequeue();
-                    if (k.Key == "KeyUp" || k.Key == "Space"  )
+                    if (k.Key == "ArrowUp" || k.Key == " "  )
                     {
                         if (playery > -2 * Universe.GetPlayerHeight)
                         {
@@ -179,7 +187,7 @@ namespace BlazapyBird.Pages
                 }
 
                 // remove first pipe if its out of the screen
-                if (upperPipes[0]["x"] < Universe.GetPipeWidth )
+                if (upperPipes[0]["x"] < -Universe.GetPipeWidth )
                 {
                     upperPipes.RemoveAt(0);
                     lowerPipes.RemoveAt(0);
