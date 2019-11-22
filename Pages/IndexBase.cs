@@ -125,7 +125,7 @@ namespace BlazapyBird.Pages
                 var crashTest = CheckCrash( ( x: playerx, y: playery, index: playerIndex ),
                                             upperPipes, lowerPipes);
                                     
-                if (crashTest.collPipe) return; // simplified.
+                if (crashTest.collPipe) System.Console.WriteLine("Die");; // simplified.
 
                 var playerMidPos = playerx + Universe.GetPlayerWidth / 2;
 
@@ -234,43 +234,34 @@ namespace BlazapyBird.Pages
 
         }
 
-        private (bool collPipe, bool collBase) CheckCrash((int x, int y, int index) p, List<Dictionary<string, int>> upperPipes, List<Dictionary<string, int>> lowerPipes)
+        private (bool collPipe, bool collBase) CheckCrash((int x, int y, int index) player, List<Dictionary<string, int>> upperPipes, List<Dictionary<string, int>> lowerPipes)
         {
-            /*
-                """returns True if player collders with base or pipes."""
-                pi = player['index']
-                player['w'] = IMAGES['player'][0].get_width()
-                player['h'] = IMAGES['player'][0].get_height()
+            var pi = player.index;
+            
+            if (player.y + Universe.GetPlayerHeight >= Universe.BASEY - 1)
+            {
+                return (true, true);
+            }
+            else
+            {
+                var centerX=player.x-(Universe.GetPlayerWidth/2);
+                var centerY=player.y-(Universe.GetPlayerHeight/2);
+                foreach( var (uPipe, lPipe) in upperPipes.Zip(lowerPipes))
+                {
+                    var pCenterX = uPipe["x"] - (Universe.GetPipeWidth/2);
+                    var uCenterY = uPipe["y"] - Universe.GetPipeHeight;
+                    var lCenterY = uPipe["y"] ;
 
-                # if player crashes into ground
-                if player['y'] + player['h'] >= BASEY - 1:
-                    return [True, True]
-                else:
+                    var uCollide = Math.Sqrt( Math.Pow( centerX-pCenterX ,2) + Math.Pow( centerY-uCenterY ,2)  ) > Universe.GetPlayerHeight / 2;
+                    var lCollide = Math.Sqrt( Math.Pow( centerX-pCenterX ,2) + Math.Pow( centerY-lCenterY ,2)  ) > Universe.GetPlayerHeight / 2;
 
-                    playerRect = pygame.Rect(player['x'], player['y'],
-                                player['w'], player['h'])
-                    pipeW = IMAGES['pipe'][0].get_width()
-                    pipeH = IMAGES['pipe'][0].get_height()
+                    if (uCollide || lCollide)
+                    {
+                        return (true, false);
+                    }
+                }
+            }
 
-                    for uPipe, lPipe in zip(upperPipes, lowerPipes):
-                        # upper and lower pipe rects
-                        uPipeRect = pygame.Rect(uPipe['x'], uPipe['y'], pipeW, pipeH)
-                        lPipeRect = pygame.Rect(lPipe['x'], lPipe['y'], pipeW, pipeH)
-
-                        # player and upper/lower pipe hitmasks
-                        pHitMask = HITMASKS['player'][pi]
-                        uHitmask = HITMASKS['pipe'][0]
-                        lHitmask = HITMASKS['pipe'][1]
-
-                        # if bird collided with upipe or lpipe
-                        uCollide = pixelCollision(playerRect, uPipeRect, pHitMask, uHitmask)
-                        lCollide = pixelCollision(playerRect, lPipeRect, pHitMask, lHitmask)
-
-                        if uCollide or lCollide:
-                            return [True, False]
-
-                return [False, False]            
-             */
              return (collPipe: false, collBase: false);
         }
 
