@@ -203,7 +203,7 @@ namespace BlazapyBird.Pages
                 foreach( var (uPipe, lPipe) in upperPipes.Zip(lowerPipes))
                 {
                     Universe.ToRender.Add(
-                        new Printable( uPipe["x"], uPipe["y"], Universe.PIPES_LIST[0] )
+                        new Printable( uPipe["x"], uPipe["y"], Universe.PIPES_LIST[0], -180 )
                     );
                     Universe.ToRender.Add(
                         new Printable( lPipe["x"], lPipe["y"], Universe.PIPES_LIST[1] )
@@ -225,21 +225,13 @@ namespace BlazapyBird.Pages
                 
                 //  playerSurface = pygame.transform.rotate(IMAGES['player'][playerIndex], visibleRot)  Simplify
 
-                var ocell = new Printable( playerx, playery,  player_images[playerIndex] );
+                var ocell = new Printable( playerx, playery,  player_images[playerIndex] , -visibleRot);
                 Universe.ToRender.Add(ocell);
 
                 await render();
 
             }
-            
-            /*
 
-        
-        SCREEN.blit(playerSurface, (playerx, playery))
-
-        pygame.display.update()
-        FPSCLOCK.tick(FPS)            
-             */
         }
 
         private (bool collPipe, bool collBase) CheckCrash((int x, int y, int index) p, List<Dictionary<string, int>> upperPipes, List<Dictionary<string, int>> lowerPipes)

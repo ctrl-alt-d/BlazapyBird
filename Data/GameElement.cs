@@ -19,13 +19,13 @@ namespace BlazapyBird.Data
         public virtual string Image { get; set; }
 
 
-        
+        public string RotateTransform => this.R.HasValue?$"transform: rotate({Convert.ToInt32(R).ToString()}deg);":"";
         public virtual string CssStyle => $@"
             position: absolute;
             top: {CssY.ToString()}px;
             left: {CssX.ToString()}px;
             z-index: 0;
-            ";
+            {RotateTransform}";
     }
 
 }
