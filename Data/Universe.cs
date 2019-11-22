@@ -7,7 +7,7 @@ namespace BlazapyBird.Data
     public class Universe: Printable
     {
         public List<Printable> ToRender = new List<Printable>();
-        public string DivStyle => $"width: {SCREENWIDTH}px; height: {SCREENHEIGHT}px; border: 0; padding: 0; margin: 0; position: relative;";
+        public string DivStyle => $"max-width: {SCREENWIDTH}px; height: {SCREENHEIGHT}px; max-height: {SCREENHEIGHT}px; border: 0; padding: 0; margin: 0; position: relative;";
         public const int FPS = 30;
         public int FPS_DELAY => Convert.ToInt32( 1000.0 / FPS );
 
