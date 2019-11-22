@@ -7,14 +7,24 @@ html, body {
     background-color: black;
 }
 
-.universe {
-    border: 0; 
-    padding: 0; 
+.zero {
+    border: 0; padding: 0; margin: 0;
+}
+
+.gggggg {
+    width: 288px; height: 512px;
     position: absolute;
-	top:0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-  	
-	margin: auto;
+} 
+
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;    
+}
+
+.col {
+    flex-basis: 100%;
+    flex: 1;
+    z-index: 10;
+    background-color: black;
 }

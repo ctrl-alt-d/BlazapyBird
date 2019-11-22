@@ -1,12 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BlazapyBird.Data
 {
-    public class Universe: GameElement
+    public class Universe: Printable
     {
-        public override string CssStyle => $"width: {SCREENWIDTH}px; height: {SCREENHEIGHT}px; ";
+        public List<Printable> ToRender = new List<Printable>();
+        public string DivStyle => $"width: {SCREENWIDTH}px; height: {SCREENHEIGHT}px; border: 0; padding: 0; margin: 0; position: relative;";
         public const int FPS = 30;
+        public int FPS_DELAY => Convert.ToInt32( 1000.0 / FPS );
+
         public const int SCREENWIDTH  = 288;
         public const int SCREENHEIGHT = 512;
         public override int Width => SCREENHEIGHT;
@@ -19,6 +23,18 @@ namespace BlazapyBird.Data
         //IMAGES, SOUNDS, HITMASKS = {}, {}, {}
 
         public string CurrentBackgroundImage {get; set; } = BACKGROUNDS_LIST[0];
+        public override string Image => CurrentBackgroundImage;
+        public int GetPlayerHeight => 24;
+
+        public int GetBaseWidth => 336;
+
+        public int GetBackgroundWidth => 288;
+
+        public int GetPipeHeight => 320;
+
+        public int GetPlayerWidth => 34;
+
+        public int GetPipeWidth => 52;
 
         public static Dictionary<string, string[]> IMAGESS =new Dictionary<string, string[]>() 
         {
@@ -39,8 +55,8 @@ namespace BlazapyBird.Data
         public static Dictionary<string, string> IMAGES = new Dictionary<string, string>() 
         {
             ["gameover"] ="assets/sprites/gameover.png",
-            ["message"] ="assets/sprites/gameover.png",
-            ["base"] ="assets/sprites/gameover.png",
+            ["message"] ="assets/sprites/message.png",
+            ["base"] ="assets/sprites/base.png",
         };
 
         public static Dictionary<string, string> SOUNDS = new Dictionary<string, string>() 
@@ -95,5 +111,7 @@ namespace BlazapyBird.Data
             "assets/sprites/pipe-green.png",
             "assets/sprites/pipe-red.png",
         };
+
+
     }
 }

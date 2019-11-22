@@ -12,20 +12,15 @@ namespace BlazapyBird.Data
         public double Y {set; get; }
         public virtual int Width {set; get; }
         public virtual int Height {set; get; }
-        public double _Mass {set; get; }
-        public double _EatedMass {set; get; } = 0;
-        public virtual bool EatableByMySelf {set; get; } = false;
-        public long Mass => (int)_Mass;
-        public virtual long MaxMass {set; get; } = 20000;
-
-        public long CssX =>Convert.ToInt32(X-X/2);
-        public long CssY =>Convert.ToInt32(Y-Y/2);
+        public long CssX =>Convert.ToInt32(X);
+        public long CssY =>Convert.ToInt32(Y);
         public string CssClass => this.GetType().Name.ToLower();
+        public virtual string Image { get; set; }
         public virtual string CssStyle => $@"
-            top: {CssY}px;
-            left: {CssX}px;
-            width: {Width}px;
-            height: {Height}px;
+            position: absolute;
+            top: {CssY.ToString()}px;
+            left: {CssX.ToString()}px;
+            z-index: 0;
             ";
     }
 
