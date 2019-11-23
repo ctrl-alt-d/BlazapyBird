@@ -23,6 +23,8 @@ namespace BlazapyBird.Pages
         }
         protected ElementReference OuterDiv;
 
+        protected bool IsDead = false;
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -47,7 +49,7 @@ namespace BlazapyBird.Pages
             var playerIndexGen = new Cycle<int>(new [] {0, 1, 2, 1}).GetEnumerator();
 
             var playerx = Convert.ToInt32( Universe.SCREENWIDTH * 0.2);
-            var playery = Convert.ToInt32((Universe.SCREENHEIGHT - Universe.GetPlayerHeight / 2));
+            var playery = Convert.ToInt32((Universe.SCREENHEIGHT - Universe.GetPlayerHeight) / 2);
 
             var basex = 0;
             var baseShift = Universe.GetBaseWidth - Universe.GetBackgroundWidth;
@@ -118,6 +120,11 @@ namespace BlazapyBird.Pages
                             playerFlapped = true;
                             //SOUNDS['wing'].play()
                         }
+                    } else if (k.Key == "P" || k.Key == "p")
+                    {
+                        playerx = Convert.ToInt32( Universe.SCREENWIDTH * 0.2);
+                        playery = Convert.ToInt32((Universe.SCREENHEIGHT - Universe.GetPlayerHeight) / 2);
+                        IsDead = false;
                     }
                 }
 
@@ -125,7 +132,7 @@ namespace BlazapyBird.Pages
                 var crashTest = CheckCrash( ( x: playerx, y: playery, index: playerIndex ),
                                             upperPipes, lowerPipes);
                                     
-                if (crashTest.collPipe) System.Console.WriteLine("Die");; // simplified.
+                if (crashTest.collPipe) IsDead = true;
 
                 var playerMidPos = playerx + Universe.GetPlayerWidth / 2;
 
@@ -225,8 +232,11 @@ namespace BlazapyBird.Pages
                 
                 //  playerSurface = pygame.transform.rotate(IMAGES['player'][playerIndex], visibleRot)  Simplify
 
-                var ocell = new Printable( playerx, playery,  player_images[playerIndex] , -visibleRot);
-                Universe.ToRender.Add(ocell);
+                if (!IsDead)
+                {
+                    var ocell = new Printable( playerx, playery,  player_images[playerIndex] , -visibleRot);
+                    Universe.ToRender.Add(ocell);
+                }
 
                 await render();
 
@@ -244,16 +254,13 @@ namespace BlazapyBird.Pages
             }
             else
             {
-                var centerX=player.x-(Universe.GetPlayerWidth/2);
-                var centerY=player.y-(Universe.GetPlayerHeight/2);
+                var playerCenterX=player.x-(Universe.GetPlayerWidth/2);
+                var playerUpY=player.y;
+                var playerLoY=Convert.ToInt32( player.y+Universe.GetPlayerHeight*0.8 );
                 foreach( var (uPipe, lPipe) in upperPipes.Zip(lowerPipes))
-                {
-                    var pCenterX = uPipe["x"] - (Universe.GetPipeWidth/2);
-                    var uCenterY = uPipe["y"] - Universe.GetPipeHeight;
-                    var lCenterY = uPipe["y"] ;
-
-                    var uCollide = Math.Sqrt( Math.Pow( centerX-pCenterX ,2) + Math.Pow( centerY-uCenterY ,2)  ) > Universe.GetPlayerHeight / 2;
-                    var lCollide = Math.Sqrt( Math.Pow( centerX-pCenterX ,2) + Math.Pow( centerY-lCenterY ,2)  ) > Universe.GetPlayerHeight / 2;
+                {                    
+                    var uCollide = InRectangle( playerCenterX, playerUpY, uPipe["x"], uPipe["y"], uPipe["x"] + Universe.GetPipeWidth, uPipe["y"] + Universe.GetPipeHeight   );
+                    var lCollide = InRectangle( playerCenterX, playerLoY, lPipe["x"], lPipe["y"], lPipe["x"] + Universe.GetPipeWidth, lPipe["y"] + Universe.GetPipeHeight   );
 
                     if (uCollide || lCollide)
                     {
@@ -263,6 +270,16 @@ namespace BlazapyBird.Pages
             }
 
              return (collPipe: false, collBase: false);
+        }
+
+        private bool InRectangle(int pX, int pY, int lX, int uY, int rX, int lY)
+        {
+            bool isAtLeft = pX < lX;
+            bool isAtRight = pX > rX;
+            bool isDown = pY > lY;
+            bool isUp = pY < uY;
+            bool isOut = isAtLeft || isAtRight || isDown || isUp;
+            return !isOut;
         }
 
         private Dictionary<string,int>[] getRandomPipe()

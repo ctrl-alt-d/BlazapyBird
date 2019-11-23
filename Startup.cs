@@ -28,7 +28,8 @@ namespace BlazapyBird
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<Universe>();
+            //services.AddSingleton<Universe>();
+            services.AddScoped<Universe>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
