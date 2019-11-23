@@ -112,7 +112,7 @@ namespace BlazapyBird.Pages
                 while (KeyPressed.Any())
                 {
                     var k = KeyPressed.Dequeue();
-                    if (k.Key == "ArrowUp" || k.Key == " "  )
+                    if (!IsDead && (k.Key == "ArrowUp" || k.Key == " "  ))
                     {
                         if (playery > -2 * Universe.GetPlayerHeight)
                         {
@@ -120,10 +120,14 @@ namespace BlazapyBird.Pages
                             playerFlapped = true;
                             //SOUNDS['wing'].play()
                         }
-                    } else if (k.Key == "P" || k.Key == "p")
+                    } else if (IsDead && ( k.Key == "P" || k.Key == "p") )
                     {
                         playerx = Convert.ToInt32( Universe.SCREENWIDTH * 0.2);
                         playery = Convert.ToInt32((Universe.SCREENHEIGHT - Universe.GetPlayerHeight) / 2);
+                        upperPipes[0]["x"] = Universe.SCREENWIDTH + 200;
+                        lowerPipes[0]["x"] = Universe.SCREENWIDTH + 200;
+                        upperPipes[1]["x"] = Universe.SCREENWIDTH + 200 + (Universe.SCREENWIDTH / 2);
+                        lowerPipes[1]["x"] = Universe.SCREENWIDTH + 200 + (Universe.SCREENWIDTH / 2);
                         IsDead = false;
                     }
                 }
@@ -148,10 +152,13 @@ namespace BlazapyBird.Pages
                 }
 
                 // playerIndex basex change
-                if ((loopIter + 1) % 3 == 0)
+                if (!IsDead)
                 {
-                    playerIndexGen.MoveNext();
-                    playerIndex = playerIndexGen.Current;
+                    if ((loopIter + 1) % 3 == 0)
+                    {
+                        playerIndexGen.MoveNext();
+                        playerIndex = playerIndexGen.Current;
+                    }
                     loopIter = (loopIter + 1) % 30;
                     basex = -((-basex + 100) % baseShift);
                 }
@@ -179,7 +186,7 @@ namespace BlazapyBird.Pages
                 playery += new int[] { playerVelY, Convert.ToInt32( Universe.BASEY - playery - playerHeight) }.Min();
 
                 // move pipes to left
-                foreach( var (uPipe, lPipe) in upperPipes.Zip(lowerPipes) )
+                if (!IsDead) foreach( var (uPipe, lPipe) in upperPipes.Zip(lowerPipes) )
                 {
                     uPipe["x"] += pipeVelX;
                     lPipe["x"] += pipeVelX;
@@ -200,7 +207,7 @@ namespace BlazapyBird.Pages
                     lowerPipes.RemoveAt(0);
                 }   
 
-                // print
+                // Rendering
 
                 Universe.ToRender.Clear();
                 Universe.ToRender.Add(
@@ -217,12 +224,15 @@ namespace BlazapyBird.Pages
                     );
                 }
 
+                //score
+                var printableScore = GetPrintableScore(score);
+
                 Universe.ToRender.Add(
                     new Printable( basex, Convert.ToInt32( Universe.BASEY), Universe.IMAGES["base"]  )
                 );
 
                 // print score so player overlaps the score
-                // showScore(score): simplify
+                Universe.ToRender.AddRange(printableScore);
 
                 var visibleRot = playerRotThr;
                 if (playerRot <= playerRotThr)
@@ -232,16 +242,31 @@ namespace BlazapyBird.Pages
                 
                 //  playerSurface = pygame.transform.rotate(IMAGES['player'][playerIndex], visibleRot)  Simplify
 
-                if (!IsDead)
-                {
-                    var ocell = new Printable( playerx, playery,  player_images[playerIndex] , -visibleRot);
-                    Universe.ToRender.Add(ocell);
-                }
+                var ocell = new Printable( playerx, playery,  player_images[playerIndex] , -visibleRot);
+                Universe.ToRender.Add(ocell);
 
                 await render();
 
             }
 
+        }
+
+        private List<Printable> GetPrintableScore(int score)
+        {
+            var result = new List<Printable>();
+            var scoreDigits = score.ToString().ToCharArray().Select(x=>x-'0');
+            var totalWidth = 0;
+            foreach(var digit in scoreDigits) totalWidth += Universe.GetDigitWidth(digit);
+
+            var Xoffset = (Universe.SCREENWIDTH - totalWidth) / 2;
+            foreach(var digit in scoreDigits)
+            {
+                result.Add(
+                    new Printable(Xoffset, Convert.ToInt32( Universe.SCREENHEIGHT * 0.1), Universe.IMAGESS["numbers"][digit])                    
+                );
+                Xoffset += Universe.GetDigitWidth(digit);
+            }
+            return result;
         }
 
         private (bool collPipe, bool collBase) CheckCrash((int x, int y, int index) player, List<Dictionary<string, int>> upperPipes, List<Dictionary<string, int>> lowerPipes)

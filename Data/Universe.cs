@@ -112,6 +112,9 @@ namespace BlazapyBird.Data
             "assets/sprites/pipe-red.png",
         };
 
-
+        public int GetDigitWidth(int digit)
+        {
+            return digit == 1 ? 16 : 24;
+        }
     }
 }
